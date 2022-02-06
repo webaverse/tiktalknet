@@ -27,6 +27,18 @@ from core.download import download_from_drive
 from flask import request, send_file, make_response
 
 app = JupyterDash(__name__)
+
+@app.server.route("/tts")
+def home():
+    s = request.args.get("s")
+    voice = request.args.get('voice')
+    if voice is None:
+        voice = "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx"
+    return send_file(
+        generate_audio2(1, voice + "|default", None, s, ['dra'], 0, None, None, None),
+        attachment_filename="audio.wav",
+        mimetype="audio/x-wav",
+    )
 DEVICE = "cuda:0"
 CPU_PITCH = False
 RUN_PATH = os.path.dirname(os.path.realpath(__file__))
