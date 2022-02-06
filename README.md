@@ -1,26 +1,26 @@
-# Controllable TalkNet 
-Controllable TalkNet is a web application that lets you synthesize speech, 
-which mimics the pitch and pacing of an existing audio clip. It's based on [NVIDIA's implementation](https://github.com/NVIDIA/NeMo)
-of TalkNet 2, with some changes to support singing synthesis and higher audio quality.
+# Install
 
-## Requirements
-* A Google account to run Colab, or...
-* An NVIDIA GPU with 4+ GB of VRAM
-* 10 GB of free space
+```python
+import os
 
-## How to run
-### Google Colab
-* [Go to the Colab notebook](https://colab.research.google.com/drive/1aj6Jk8cpRw7SsN3JSYCv57CrR6s0gYPB) and follow the instructions.
+custom_lists = [
+    #"https://gist.githubusercontent.com/SortAnon/997cda157954a189259c9876fd804e53/raw/example_models.json",
+]
 
-### TalkNet Offline (Windows)
-* [Download the setup script](https://github.com/SortAnon/ControllableTalkNet/releases/latest/download/TalkNetOffline.zip)
-and extract it to a folder.
-* Run setup.bat. The initial setup will take about 20 minutes.
-* When it's done, run talknet.bat to start TalkNet on http://127.0.0.1:8050/. To download updates, run update.bat.
+!apt-get install sox libsndfile1 ffmpeg
+!pip install tensorflow==2.4.1 dash==1.21.0 dash-bootstrap-components==0.13.0 jupyter-dash==0.4.0 psola wget unidecode pysptk frozendict torchvision==0.9.1 torchaudio==0.8.1 torchtext==0.9.1 torch_stft kaldiio pydub pyannote.audio g2p_en pesq pystoi crepe resampy ffmpeg-python torchcrepe einops taming-transformers-rom1504==0.0.6 tensorflow-hub
+!python -m pip install git+https://github.com/SortAnon/NeMo.git
+if not os.path.exists("hifi-gan"):
+    !git clone -q --recursive https://github.com/SortAnon/hifi-gan
+!git clone -q https://github.com/SortAnon/ControllableTalkNet
+os.chdir("/content/ControllableTalkNet")
+!git archive --output=./files.tar --format=tar HEAD
+os.chdir("/content")
+!tar xf ControllableTalkNet/files.tar
+!rm -rf ControllableTalkNet
 
-### Docker (Linux)
-* Install Docker and NVIDIA Container Toolkit.
-* [Download the Dockerfile.](https://raw.githubusercontent.com/SortAnon/ControllableTalkNet/main/Dockerfile)
-Open a terminal, and navigate to the directory where you saved it.
-* Run ```docker build -t talknet-offline .``` to build the image. Add ```sudo``` if you're not using rootless Docker.
-* Run ```docker run -it --gpus all -p 8050:8050 talknet-offline``` to start TalkNet on http://127.0.0.1:8050/.
+os.chdir("/content/model_lists")
+for c in custom_lists:
+    !wget "{c}"
+os.chdir("/content")
+```
