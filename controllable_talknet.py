@@ -676,7 +676,7 @@ def debug_pitch(n_clicks, pitch_clicks, current_f0s):
     return [extract_pitch.f0_to_audio(current_f0s), playback_style, pitch_clicks]
 
 
-tnmodel, tnpath, tndurs, tnpitch = None, None, None, None
+tnmodels, tnmodel, tnpath, tndurs, tnpitch = {}, None, None, None, None
 voc, last_voc, sr_voc, rec_voc = None, None, None, None
 
 
@@ -710,7 +710,12 @@ def generate_audio(
     f0s,
     f0s_wo_silence,
 ):
-    global tnmodel, tnpath, tndurs, tnpitch, voc, last_voc, sr_voc, rec_voc
+    global logString, tnmodels, tnmodel, tnpath, tndurs, tnpitch, voc, last_voc, sr_voc, rec_voc
+    # n_clicks, model, custom_model, transcript, pitch_options, pitch_factor, wav_name, f0s, f0s_wo_silence,
+    # 1 1UFQWJHzKFPumoxioopPbAzM9ydznnRX3|default None "fsdg" ['dra'] 0 None None None
+    # 1 132G6oD0HHPPn4t1H6IkYv18_F0UVLWgi|default None "got it and lol" ['dra'] 0 None None None
+    # with open('readme.txt', 'w') as f:
+    #   f.write("%s %s %s %s %s %s %s %s %s" % (n_clicks, model, custom_model, transcript, pitch_options, pitch_factor, wav_name, f0s, f0s_wo_silence))
 
     if n_clicks is None:
         raise PreventUpdate
@@ -741,32 +746,39 @@ def generate_audio(
             None,
         ]
 
+    logString += "check 1"
     try:
         with torch.no_grad():
-            if tnpath != talknet_path:
-                singer_path = os.path.join(
-                    os.path.dirname(talknet_path), "TalkNetSinger.nemo"
-                )
-                if os.path.exists(singer_path):
-                    tnmodel = TalkNetSingerModel.restore_from(singer_path)
-                else:
-                    tnmodel = TalkNetSpectModel.restore_from(talknet_path)
-                durs_path = os.path.join(
-                    os.path.dirname(talknet_path), "TalkNetDurs.nemo"
-                )
-                pitch_path = os.path.join(
-                    os.path.dirname(talknet_path), "TalkNetPitch.nemo"
-                )
-                if os.path.exists(durs_path):
-                    tndurs = TalkNetDursModel.restore_from(durs_path)
-                    tnmodel.add_module("_durs_model", tndurs)
-                    tnpitch = TalkNetPitchModel.restore_from(pitch_path)
-                    tnmodel.add_module("_pitch_model", tnpitch)
-                else:
-                    tndurs = None
-                    tnpitch = None
-                tnmodel.eval()
-                tnpath = talknet_path
+            logString += "check 2"
+            tnmodel = tnmodels.get(talknet_path)
+            logString += "old model: " + talknet_path + "\n"
+            if tnmodel is None:
+                # if tnpath != talknet_path:
+                    logString += "new model: " + talknet_path + "\n"
+                    singer_path = os.path.join(
+                        os.path.dirname(talknet_path), "TalkNetSinger.nemo"
+                    )
+                    if os.path.exists(singer_path):
+                        tnmodel = TalkNetSingerModel.restore_from(singer_path)
+                    else:
+                        tnmodel = TalkNetSpectModel.restore_from(talknet_path)
+                    durs_path = os.path.join(
+                        os.path.dirname(talknet_path), "TalkNetDurs.nemo"
+                    )
+                    pitch_path = os.path.join(
+                        os.path.dirname(talknet_path), "TalkNetPitch.nemo"
+                    )
+                    if os.path.exists(durs_path):
+                        tndurs = TalkNetDursModel.restore_from(durs_path)
+                        tnmodel.add_module("_durs_model", tndurs)
+                        tnpitch = TalkNetPitchModel.restore_from(pitch_path)
+                        tnmodel.add_module("_pitch_model", tnpitch)
+                    else:
+                        tndurs = None
+                        tnpitch = None
+                    tnmodel.eval()
+                    tnpath = talknet_path
+                    tnmodels[talknet_path] = tnmodel
 
             # Generate spectrogram
             token_list, tokens, arpa = extract_dur.get_tokens(transcript)
@@ -839,6 +851,153 @@ def generate_audio(
             None,
         ]
 
+def generate_audio2(
+    n_clicks,
+    model,
+    custom_model,
+    transcript,
+    pitch_options,
+    pitch_factor,
+    wav_name,
+    f0s,
+    f0s_wo_silence,
+):
+    global logString, tnmodels, tnpath, tndurs, tnpitch, voc, last_voc, sr_voc, rec_voc
+    # n_clicks, model, custom_model, transcript, pitch_options, pitch_factor, wav_name, f0s, f0s_wo_silence,
+    # 1 1UFQWJHzKFPumoxioopPbAzM9ydznnRX3|default None "fsdg" ['dra'] 0 None None None
+    # 1 132G6oD0HHPPn4t1H6IkYv18_F0UVLWgi|default None "got it and lol" ['dra'] 0 None None None
+    # with open('readme.txt', 'w') as f:
+    #   f.write("%s %s %s %s %s %s %s %s %s" % (n_clicks, model, custom_model, transcript, pitch_options, pitch_factor, wav_name, f0s, f0s_wo_silence))
+
+    if n_clicks is None:
+        raise PreventUpdate
+    if model is None:
+        return [None, "No character selected", playback_hide, None]
+    if transcript is None or transcript.strip() == "":
+        return [
+            None,
+            "No transcript entered",
+            playback_hide,
+            None,
+        ]
+    if wav_name is None and "dra" not in pitch_options:
+        return [
+            None,
+            "No reference audio selected",
+            playback_hide,
+            None,
+        ]
+    load_error, talknet_path, vocoder_path = download_from_drive(
+        model.split("|")[0], custom_model, RUN_PATH
+    )
+    if load_error is not None:
+        return [
+            None,
+            load_error,
+            playback_hide,
+            None,
+        ]
+
+    logString += "check 1"
+    try:
+        with torch.no_grad():
+            logString += "check 2"
+            tnmodel = tnmodels.get(talknet_path)
+            logString += "old model: " + talknet_path + "\n"
+            if tnmodel is None:
+                # if tnpath != talknet_path:
+                    logString += "new model: " + talknet_path + "\n"
+                    singer_path = os.path.join(
+                        os.path.dirname(talknet_path), "TalkNetSinger.nemo"
+                    )
+                    if os.path.exists(singer_path):
+                        tnmodel = TalkNetSingerModel.restore_from(singer_path)
+                    else:
+                        tnmodel = TalkNetSpectModel.restore_from(talknet_path)
+                    durs_path = os.path.join(
+                        os.path.dirname(talknet_path), "TalkNetDurs.nemo"
+                    )
+                    pitch_path = os.path.join(
+                        os.path.dirname(talknet_path), "TalkNetPitch.nemo"
+                    )
+                    if os.path.exists(durs_path):
+                        tndurs = TalkNetDursModel.restore_from(durs_path)
+                        tnmodel.add_module("_durs_model", tndurs)
+                        tnpitch = TalkNetPitchModel.restore_from(pitch_path)
+                        tnmodel.add_module("_pitch_model", tnpitch)
+                    else:
+                        tndurs = None
+                        tnpitch = None
+                    tnmodel.eval()
+                    tnpath = talknet_path
+                    tnmodels[talknet_path] = tnmodel
+
+            # Generate spectrogram
+            token_list, tokens, arpa = extract_dur.get_tokens(transcript)
+            if "dra" in pitch_options:
+                if tndurs is None or tnpitch is None:
+                    return [
+                        None,
+                        "Model doesn't support pitch prediction",
+                        playback_hide,
+                        None,
+                    ]
+                spect = tnmodel.generate_spectrogram(tokens=tokens)
+            else:
+                durs = extract_dur.get_duration(wav_name, transcript, token_list)
+
+                # Change pitch
+                if "pf" in pitch_options:
+                    f0_factor = np.power(np.e, (0.0577623 * float(pitch_factor)))
+                    f0s = [x * f0_factor for x in f0s]
+                    f0s_wo_silence = [x * f0_factor for x in f0s_wo_silence]
+
+                spect = tnmodel.force_spectrogram(
+                    tokens=tokens,
+                    durs=torch.from_numpy(durs)
+                    .view(1, -1)
+                    .type(torch.LongTensor)
+                    .to(DEVICE),
+                    f0=torch.FloatTensor(f0s).view(1, -1).to(DEVICE),
+                )
+
+            # Vocoding
+            if last_voc != vocoder_path:
+                voc = vocoder.HiFiGAN(vocoder_path, "config_v1", DEVICE)
+                last_voc = vocoder_path
+            audio, audio_torch = voc.vocode(spect)
+
+            # Reconstruction
+            if "srec" in pitch_options:
+                new_spect = reconstruct_inst.reconstruct(spect)
+                if rec_voc is None:
+                    rec_voc = vocoder.HiFiGAN(
+                        os.path.join(RUN_PATH, "models", "hifirec"), "config_v1", DEVICE
+                    )
+                audio, audio_torch = rec_voc.vocode(new_spect)
+
+            # Auto-tuning
+            if "pc" in pitch_options and "dra" not in pitch_options:
+                audio = extract_pitch.auto_tune(audio, audio_torch, f0s_wo_silence)
+
+            # Super-resolution
+            if sr_voc is None:
+                sr_voc = vocoder.HiFiGAN(
+                    os.path.join(RUN_PATH, "models", "hifisr"), "config_32k", DEVICE
+                )
+            sr_mix, new_rate = sr_voc.superres(audio, 22050)
+
+            # Create buffer
+            buffer = io.BytesIO()
+            wavfile.write(buffer, new_rate, sr_mix.astype(np.int16))
+            return buffer
+            # b64 = base64.b64encode(buffer.getvalue())
+            # sound = "data:audio/x-wav;base64," + b64.decode("ascii")
+
+            # output_name = "TalkNet_" + str(int(time.time()))
+            # return [sound, arpa, playback_style, output_name]
+    except Exception:
+        return str(traceback.format_exc())
 
 if __name__ == "__main__":
     app.run_server(
