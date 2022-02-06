@@ -1,3 +1,9 @@
+Fork of https://github.com/SortAnon/ControllableTalkNet.
+
+Adds standalone server w/ direct API instead of Jupyter-Dash, and multi-character support for quick swap. Though this project comes with sample characters, none of that data is in this repo. The included sample character url lists here in GDrives of various people and projects, largely pones at https://www.kickscondor.com/pony-voice-preservation-project/.
+
+Research is here: https://docs.google.com/document/d/1xe1Clvdg6EFFDtIkkFwT-NPLRDPvkV4G675SUKjxVRU/edit
+
 # Install
 
 ```sh
