@@ -1,7 +1,6 @@
 # Install
 
-#@markdown **Step 2:** Download dependencies.
-%tensorflow_version 2.x
+```python
 import os
 
 custom_lists = [
@@ -24,3 +23,4 @@ os.chdir("/content/model_lists")
 for c in custom_lists:
     !wget "{c}"
 os.chdir("/content")
+```
