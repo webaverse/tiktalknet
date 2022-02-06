@@ -41,6 +41,13 @@ def home():
         attachment_filename="audio.wav",
         mimetype="audio/x-wav",
     )
+
+@app.server.route("/logs")
+def logs():
+    response = make_response(logString, 200)
+    response.mimetype = "text/plain"
+    return response
+
 DEVICE = "cuda:0"
 CPU_PITCH = False
 RUN_PATH = os.path.dirname(os.path.realpath(__file__))
