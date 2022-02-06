@@ -833,9 +833,12 @@ def generate_audio(
 
 if __name__ == "__main__":
     app.run_server(
+        host="0.0.0.0",
+        port=8080,
         mode="external",
-        debug=True,
-        dev_tools_ui=True,
-        dev_tools_hot_reload=True,
+        # debug=True,
+        # dev_tools_silence_routes_logging = False,
+        # dev_tools_ui=True,
+        # dev_tools_hot_reload=True,
         threaded=True,
     )
