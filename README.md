@@ -1,8 +1,8 @@
-# CUDA-based character synthesis
+# CUDA-based character voice synthesis
 
 Fork of https://github.com/SortAnon/ControllableTalkNet.
 
-Runs on GPU instances. Driver/CUDA setup is not part of these instructions, but assuming you can run accelerated PyTorch you should be OK.
+Should work out of the box. Runs on GPU instances. Driver/CUDA setup is not part of these instructions, but assuming you can run accelerated PyTorch you should be OK.
 
 This fork adds a standalone server w/ direct API instead of Jupyter-Dash, and multi-character support for quick swap (lag-free synthesis in a server setting).
 
