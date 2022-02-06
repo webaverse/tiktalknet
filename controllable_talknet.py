@@ -28,6 +28,8 @@ from flask import request, send_file, make_response
 
 app = JupyterDash(__name__)
 
+logString = ""
+
 @app.server.route("/tts")
 def home():
     s = request.args.get("s")
