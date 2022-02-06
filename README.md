@@ -29,4 +29,8 @@ git archive --output=./files.tar --format=tar HEAD
 cd ..
 tar xf ControllableTalkNet/files.tar
 rm -rf ControllableTalkNet
+
+# Run
+
+python3 controllable_talknet.py
 ```
