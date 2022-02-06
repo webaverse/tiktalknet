@@ -1,10 +1,16 @@
+# CUDA-based character synthesis
+
 Fork of https://github.com/SortAnon/ControllableTalkNet.
 
-Adds standalone server w/ direct API instead of Jupyter-Dash, and multi-character support for quick swap. Though this project comes with sample characters, none of that data is in this repo. This project just links to the GDrive ids of various people and projects, largely pones at https://www.kickscondor.com/pony-voice-preservation-project/.
+Runs on GPU instances. Driver/CUDA setup is not part of these instructions, but assuming you can run accelerated PyTorch you should be OK.
+
+This fork adds a standalone server w/ direct API instead of Jupyter-Dash, and multi-character support for quick swap (lag-free synthesis in a server setting).
+
+Though this project comes with sample characters, none of that data is in this repo. This project just links to the GDrive ids of various people and projects, largely pones at https://www.kickscondor.com/pony-voice-preservation-project/.
 
 Research is here: https://docs.google.com/document/d/1xe1Clvdg6EFFDtIkkFwT-NPLRDPvkV4G675SUKjxVRU/edit
 
-# Install
+## Install
 
 ```sh
 
