@@ -24,13 +24,15 @@ import time
 import uuid
 from core import extract, vocoder, reconstruct
 from core.download import download_from_drive
-from flask import request, send_file, make_response
+from flask import request, send_file, make_response, abort
 
 app = JupyterDash(__name__)
 
 @app.server.route("/tts")
 def home():
     s = request.args.get("s")
+    if s is None or s == "":
+        abort(400)
     voice = request.args.get('voice')
     if voice is None or voice == "":
         voice = "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx"
