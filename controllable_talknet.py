@@ -1004,7 +1004,7 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8080,
         mode="external",
-        # debug=True,
+        debug=False,
         # dev_tools_silence_routes_logging = False,
         # dev_tools_ui=True,
         # dev_tools_hot_reload=True,
