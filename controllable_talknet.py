@@ -36,11 +36,21 @@ def home():
     voice = request.args.get('voice')
     if voice is None or voice == "":
         voice = "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx"
-    return send_file(
+    response = make_response(send_file(
         generate_audio2(1, voice + "|default", None, s, ['dra'], 0, None, None, None),
         attachment_filename="audio.wav",
         mimetype="audio/x-wav",
-    )
+    ))
+    # res.setHeader('Access-Control-Allow-Origin', '*');
+    # res.setHeader('Access-Control-Allow-Headers', '*');
+    # res.setHeader('Access-Control-Allow-Methods', '*');
+    # res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    # res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    # res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    return response
 
 DEVICE = "cuda:0"
 CPU_PITCH = False
