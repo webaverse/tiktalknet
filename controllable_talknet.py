@@ -28,8 +28,6 @@ from flask import request, send_file, make_response
 
 app = JupyterDash(__name__)
 
-logString = ""
-
 @app.server.route("/tts")
 def home():
     s = request.args.get("s")
@@ -41,12 +39,6 @@ def home():
         attachment_filename="audio.wav",
         mimetype="audio/x-wav",
     )
-
-@app.server.route("/logs")
-def logs():
-    response = make_response(logString, 200)
-    response.mimetype = "text/plain"
-    return response
 
 DEVICE = "cuda:0"
 CPU_PITCH = False
@@ -710,7 +702,7 @@ def generate_audio(
     f0s,
     f0s_wo_silence,
 ):
-    global logString, tnmodels, tnmodel, tnpath, tndurs, tnpitch, voc, last_voc, sr_voc, rec_voc
+    global tnmodels, tnmodel, tnpath, tndurs, tnpitch, voc, last_voc, sr_voc, rec_voc
     # n_clicks, model, custom_model, transcript, pitch_options, pitch_factor, wav_name, f0s, f0s_wo_silence,
     # 1 1UFQWJHzKFPumoxioopPbAzM9ydznnRX3|default None "fsdg" ['dra'] 0 None None None
     # 1 132G6oD0HHPPn4t1H6IkYv18_F0UVLWgi|default None "got it and lol" ['dra'] 0 None None None
@@ -746,15 +738,11 @@ def generate_audio(
             None,
         ]
 
-    logString += "check 1"
     try:
         with torch.no_grad():
-            logString += "check 2"
             tnmodel = tnmodels.get(talknet_path)
-            logString += "old model: " + talknet_path + "\n"
             if tnmodel is None:
                 # if tnpath != talknet_path:
-                    logString += "new model: " + talknet_path + "\n"
                     singer_path = os.path.join(
                         os.path.dirname(talknet_path), "TalkNetSinger.nemo"
                     )
@@ -862,7 +850,7 @@ def generate_audio2(
     f0s,
     f0s_wo_silence,
 ):
-    global logString, tnmodels, tnpath, tndurs, tnpitch, voc, last_voc, sr_voc, rec_voc
+    global tnmodels, tnpath, tndurs, tnpitch, voc, last_voc, sr_voc, rec_voc
     # n_clicks, model, custom_model, transcript, pitch_options, pitch_factor, wav_name, f0s, f0s_wo_silence,
     # 1 1UFQWJHzKFPumoxioopPbAzM9ydznnRX3|default None "fsdg" ['dra'] 0 None None None
     # 1 132G6oD0HHPPn4t1H6IkYv18_F0UVLWgi|default None "got it and lol" ['dra'] 0 None None None
@@ -898,15 +886,11 @@ def generate_audio2(
             None,
         ]
 
-    logString += "check 1"
     try:
         with torch.no_grad():
-            logString += "check 2"
             tnmodel = tnmodels.get(talknet_path)
-            logString += "old model: " + talknet_path + "\n"
             if tnmodel is None:
                 # if tnpath != talknet_path:
-                    logString += "new model: " + talknet_path + "\n"
                     singer_path = os.path.join(
                         os.path.dirname(talknet_path), "TalkNetSinger.nemo"
                     )
