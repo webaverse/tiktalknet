@@ -32,7 +32,7 @@ app = JupyterDash(__name__)
 def home():
     s = request.args.get("s")
     voice = request.args.get('voice')
-    if voice is None:
+    if voice is None or voice == "":
         voice = "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx"
     return send_file(
         generate_audio2(1, voice + "|default", None, s, ['dra'], 0, None, None, None),
