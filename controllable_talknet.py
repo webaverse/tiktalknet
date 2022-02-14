@@ -28,19 +28,29 @@ from flask import request, send_file, make_response, abort
 
 app = JupyterDash(__name__)
 
+def getSilentWav():
+  f = open("assets/silent.wav", "rb")
+  buffer = io.BytesIO(f.read())
+  return buffer
+
+def mkResponse(data):
+  return make_response(send_file(
+    data,
+    attachment_filename="audio.wav",
+    mimetype="audio/x-wav",
+  ))
+
 @app.server.route("/tts")
 def home():
     s = request.args.get("s")
+    response = None
     if s is None or s == "":
-        abort(400)
-    voice = request.args.get('voice')
-    if voice is None or voice == "":
-        voice = "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx"
-    response = make_response(send_file(
-        generate_audio2(1, voice + "|default", None, s, ['dra'], 0, None, None, None),
-        attachment_filename="audio.wav",
-        mimetype="audio/x-wav",
-    ))
+        response = mkResponse(getSilentWav())
+    else:
+        voice = request.args.get('voice')
+        if voice is None or voice == "":
+            voice = "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx"
+        response = mkResponse(generate_audio2(1, voice + "|default", None, s, ['dra'], 0, None, None, None))
     # res.setHeader('Access-Control-Allow-Origin', '*');
     # res.setHeader('Access-Control-Allow-Headers', '*');
     # res.setHeader('Access-Control-Allow-Methods', '*');
@@ -994,9 +1004,7 @@ def generate_audio2(
                 # output_name = "TalkNet_" + str(int(time.time()))
                 # return [sound, arpa, playback_style, output_name]
             except IndexError:
-                f = open("assets/silent.wav", "rb")
-                buffer = io.BytesIO(f.read())
-                return buffer
+                return getSilentWav()
     except Exception:
         return str(traceback.format_exc())
 
