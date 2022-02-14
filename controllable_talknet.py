@@ -929,69 +929,74 @@ def generate_audio2(
                     tnmodels[talknet_path] = tnmodel
 
             # Generate spectrogram
-            token_list, tokens, arpa = extract_dur.get_tokens(transcript)
-            if "dra" in pitch_options:
-                if tndurs is None or tnpitch is None:
-                    return [
-                        None,
-                        "Model doesn't support pitch prediction",
-                        playback_hide,
-                        None,
-                    ]
-                spect = tnmodel.generate_spectrogram(tokens=tokens)
-            else:
-                durs = extract_dur.get_duration(wav_name, transcript, token_list)
+            try:
+                token_list, tokens, arpa = extract_dur.get_tokens(transcript)
+                if "dra" in pitch_options:
+                    if tndurs is None or tnpitch is None:
+                        return [
+                            None,
+                            "Model doesn't support pitch prediction",
+                            playback_hide,
+                            None,
+                        ]
+                    spect = tnmodel.generate_spectrogram(tokens=tokens)
+                else:
+                    durs = extract_dur.get_duration(wav_name, transcript, token_list)
 
-                # Change pitch
-                if "pf" in pitch_options:
-                    f0_factor = np.power(np.e, (0.0577623 * float(pitch_factor)))
-                    f0s = [x * f0_factor for x in f0s]
-                    f0s_wo_silence = [x * f0_factor for x in f0s_wo_silence]
+                    # Change pitch
+                    if "pf" in pitch_options:
+                        f0_factor = np.power(np.e, (0.0577623 * float(pitch_factor)))
+                        f0s = [x * f0_factor for x in f0s]
+                        f0s_wo_silence = [x * f0_factor for x in f0s_wo_silence]
 
-                spect = tnmodel.force_spectrogram(
-                    tokens=tokens,
-                    durs=torch.from_numpy(durs)
-                    .view(1, -1)
-                    .type(torch.LongTensor)
-                    .to(DEVICE),
-                    f0=torch.FloatTensor(f0s).view(1, -1).to(DEVICE),
-                )
-
-            # Vocoding
-            if last_voc != vocoder_path:
-                voc = vocoder.HiFiGAN(vocoder_path, "config_v1", DEVICE)
-                last_voc = vocoder_path
-            audio, audio_torch = voc.vocode(spect)
-
-            # Reconstruction
-            if "srec" in pitch_options:
-                new_spect = reconstruct_inst.reconstruct(spect)
-                if rec_voc is None:
-                    rec_voc = vocoder.HiFiGAN(
-                        os.path.join(RUN_PATH, "models", "hifirec"), "config_v1", DEVICE
+                    spect = tnmodel.force_spectrogram(
+                        tokens=tokens,
+                        durs=torch.from_numpy(durs)
+                        .view(1, -1)
+                        .type(torch.LongTensor)
+                        .to(DEVICE),
+                        f0=torch.FloatTensor(f0s).view(1, -1).to(DEVICE),
                     )
-                audio, audio_torch = rec_voc.vocode(new_spect)
 
-            # Auto-tuning
-            if "pc" in pitch_options and "dra" not in pitch_options:
-                audio = extract_pitch.auto_tune(audio, audio_torch, f0s_wo_silence)
+                # Vocoding
+                if last_voc != vocoder_path:
+                    voc = vocoder.HiFiGAN(vocoder_path, "config_v1", DEVICE)
+                    last_voc = vocoder_path
+                audio, audio_torch = voc.vocode(spect)
 
-            # Super-resolution
-            if sr_voc is None:
-                sr_voc = vocoder.HiFiGAN(
-                    os.path.join(RUN_PATH, "models", "hifisr"), "config_32k", DEVICE
-                )
-            sr_mix, new_rate = sr_voc.superres(audio, 22050)
+                # Reconstruction
+                if "srec" in pitch_options:
+                    new_spect = reconstruct_inst.reconstruct(spect)
+                    if rec_voc is None:
+                        rec_voc = vocoder.HiFiGAN(
+                            os.path.join(RUN_PATH, "models", "hifirec"), "config_v1", DEVICE
+                        )
+                    audio, audio_torch = rec_voc.vocode(new_spect)
 
-            # Create buffer
-            buffer = io.BytesIO()
-            wavfile.write(buffer, new_rate, sr_mix.astype(np.int16))
-            return buffer
-            # b64 = base64.b64encode(buffer.getvalue())
-            # sound = "data:audio/x-wav;base64," + b64.decode("ascii")
+                # Auto-tuning
+                if "pc" in pitch_options and "dra" not in pitch_options:
+                    audio = extract_pitch.auto_tune(audio, audio_torch, f0s_wo_silence)
 
-            # output_name = "TalkNet_" + str(int(time.time()))
-            # return [sound, arpa, playback_style, output_name]
+                # Super-resolution
+                if sr_voc is None:
+                    sr_voc = vocoder.HiFiGAN(
+                        os.path.join(RUN_PATH, "models", "hifisr"), "config_32k", DEVICE
+                    )
+                sr_mix, new_rate = sr_voc.superres(audio, 22050)
+
+                # Create buffer
+                buffer = io.BytesIO()
+                wavfile.write(buffer, new_rate, sr_mix.astype(np.int16))
+                return buffer
+                # b64 = base64.b64encode(buffer.getvalue())
+                # sound = "data:audio/x-wav;base64," + b64.decode("ascii")
+
+                # output_name = "TalkNet_" + str(int(time.time()))
+                # return [sound, arpa, playback_style, output_name]
+            except IndexError:
+                f = open("assets/silent.wav", "rb")
+                buffer = io.BytesIO(f.read())
+                return buffer
     except Exception:
         return str(traceback.format_exc())
 
