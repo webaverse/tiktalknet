@@ -10,6 +10,10 @@ Though this project comes with sample characters, none of that data is in this r
 
 Research is here: https://docs.google.com/document/d/1xe1Clvdg6EFFDtIkkFwT-NPLRDPvkV4G675SUKjxVRU/edit
 
+Datasets:
+- https://mega.nz/folder/jkwimSTa#_xk0VnR30C8Ljsy4RCGSig/folder/OloAmDqZ
+- https://mega.nz/folder/gVYUEZrI#6dQHH3P2cFYWm3UkQveHxQ/folder/JQ43mCyB
+
 ## Install
 
 ```sh
