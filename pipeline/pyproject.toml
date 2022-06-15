@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "LazarusSpeechPipeline"
+version = "0.0.1"
+description = "UHV-OTS speech corpora generation pipeline."
+authors = ["0xCold"]
+
+[tool.poetry.dependencies]
+python = "3.9.7"
+pandas = "^1.2.1"
+torch = "^1.7.1"
+spleeter = "^2.3.0"
+protobuf = "3.20.1"
+numba = "0.53.0"
+ffmpeg-python = "^0.2.0"
+inaSpeechSegmenter = "^0.7.3"
+youtube_dl = "^2021.12.17"
+SoundFile = "^0.10.3"
+matplotlib = "^3.5.2"
+speechbrain = "^0.5.11"
+torchaudio = "^0.11.0"
+tqdm = "^4.64.0"
+transformers = "^4.19.2"
+pyarrow = "^8.0.0"
+sklearn = "^0.0"
+datasets = "^2.2.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core >= 1.0.0"]
+build-backend = "poetry.core.masonry.api"
