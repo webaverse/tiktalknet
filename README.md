@@ -51,17 +51,15 @@ rm -rf ControllableTalkNet
 # Run
 
 python3 controllable_talknet.py
-```
 
 # Training
 
-Place your LJSpeech dataset in the "example" folder
-```
-bash start_training.sh
+1. put LJSpeech-formatted dataset into /example folder, replacing metadata.csv and wavs
+2. edit train_filelist.txt and val_filelist.txt (just split metadata.csv 90/10% between them)
+3. follow installation intrusctions for dependencies
+4. `bash start_training.sh`
 
-```
-
-Pipeline Troubleshooting
+### Pipeline Troubleshooting
 
 `Could not load dynamic library 'libcufft.so.10'; dlerror: libcufft.so.10: cannot open shared object file: No such file or directory`
 ```
