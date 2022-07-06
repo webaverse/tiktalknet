@@ -51,7 +51,6 @@ rm -rf ControllableTalkNet
 # Run
 
 python3 controllable_talknet.py
-```
 
 # Training
 
@@ -60,7 +59,7 @@ python3 controllable_talknet.py
 3. follow installation intrusctions for dependencies
 4. `bash start_training.sh`
 
-Pipeline Troubleshooting
+### Pipeline Troubleshooting
 
 `Could not load dynamic library 'libcufft.so.10'; dlerror: libcufft.so.10: cannot open shared object file: No such file or directory`
 ```
