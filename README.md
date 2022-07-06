@@ -3,7 +3,21 @@
 This program automates and performs the steps presented in https://github.com/Appen/UHV-OTS-Speech to easily create high-quality speech datasets through a number of pretrained machine learning models. In particular we are connecting it to TalkNet to drive fast, responsive AI.
 
 - Requirements:
+    - Python 3.8 installed
     - Poetry installed
+    - [Anaconda](https://www.anaconda.com/) (recommended)
+    - NVIDIA graphics card
+
+```sh
+# create a new python environment with poetry
+conda create -n tiktalk python=3.8 poetry
+
+# install cudatoolkit and cudnn
+conda install -c conda-forge cudatoolkit=11.0 cudnn=8.1.y0
+
+poetry install
+
+```
 
 - Setup:
     - The program parses the /input folder to create speaker datasets. 
@@ -88,4 +102,18 @@ rm -rf ControllableTalkNet
 # Run
 
 python3 controllable_talknet.py
+```
+
+
+
+
+Pipeline Troubleshooting
+
+`Could not load dynamic library 'libcufft.so.10'; dlerror: libcufft.so.10: cannot open shared object file: No such file or directory`
+```
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
+sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
+sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
+sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
+sudo apt-get update
 ```
