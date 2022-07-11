@@ -1,11 +1,13 @@
 from youtube_tts_data_generator import YTSpeechDataGenerator
+generator = YTSpeechDataGenerator(dataset_name='juice')
 
-# First create a YTSpeechDataGenerator instance:
+# generator.download(links_txt="links.txt")
 
-generator = YTSpeechDataGenerator(dataset_name='example')
+# generator.prepare_dataset('links.txt')
 
-# Now create a '.txt' file that contains a list of YouTube videos that contains speeches.
-# NOTE - Make sure you choose videos with subtitles.
 
-generator.prepare_dataset('links.txt')
-# The above will take care about creating your dataset, creating a metadata file and trimming silence from the audios.
+# generator.split_audios()
+# generator.concat_audios(max_limit=12)
+generator.finalize_dataset()
+
+print("total audio length is" + str(generator.get_total_audio_length()))
