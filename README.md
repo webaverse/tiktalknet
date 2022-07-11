@@ -8,7 +8,7 @@ Datasets:
 - https://mega.nz/folder/jkwimSTa#_xk0VnR30C8Ljsy4RCGSig/folder/OloAmDqZ
 - https://mega.nz/folder/gVYUEZrI#6dQHH3P2cFYWm3UkQveHxQ/folder/JQ43mCyB
 
-# TikTalk Installation (works on AWS and CoreWeave)
+# TikTalknet Installation (works on AWS and CoreWeave)
 
 Currently requires python 3.7
 
