@@ -1,23 +1,17 @@
 [
-    {"source": "MLP",
-    "characters": [
-        {
-            "name": "Gilda (bad quality)",
-            "drive_id": "1z0JmBWzhQ-H8IWxWEBhHL2HldpWbOX3F",
-            "is_singing": false
-        }
-    ]},
-    {"source": "Tangled",
-    "characters": [
-        {
-            "name": "Rapunzel",
-            "drive_id": "1cKtPBGZ9YiD6PkyXxUiMSTbrYhQuqnWU",
-            "is_singing": false
-        },
-        {
-            "name": "Cassandra",
-            "drive_id": "1wrUj76ngpAqBzD3-bel5C5A7vvh7DsxX",
-            "is_singing": false
-        }
-    ]}
+  {
+    "name": "Gilda (bad quality)",
+    "drive_id": "1z0JmBWzhQ-H8IWxWEBhHL2HldpWbOX3F",
+    "is_singing": false
+  },
+  {
+    "name": "Rapunzel",
+    "drive_id": "1cKtPBGZ9YiD6PkyXxUiMSTbrYhQuqnWU",
+    "is_singing": false
+  },
+  {
+    "name": "Cassandra",
+    "drive_id": "1wrUj76ngpAqBzD3-bel5C5A7vvh7DsxX",
+    "is_singing": false
+  }
 ]

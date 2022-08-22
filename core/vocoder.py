@@ -23,7 +23,7 @@ import torch
 
 sys.path.append("hifi-gan")
 from denoiser import Denoiser
-from env import AttrDict
+from attrdict import AttrDict
 from meldataset import MAX_WAV_VALUE, mel_spectrogram
 from models import Generator
 
