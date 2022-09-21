@@ -1,6 +1,6 @@
 # Webaverse TTS
 
-Current deployment based on https://github.com/SortAnon/ControllableTalkNet.
+Fast text-to-speech based on NeMo and Talk net, forked from this repo: https://github.com/SortAnon/ControllableTalkNet.
 
 Though this project comes with sample characters, none of that data is in this repo. This project just links to the GDrive ids of various people and projects, largely pones at https://www.kickscondor.com/pony-voice-preservation-project/.
 
