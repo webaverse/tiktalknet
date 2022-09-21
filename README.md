@@ -1,6 +1,6 @@
-# Automatic Tik Talk
+# Webaverse TTS
 
-Fork of https://github.com/SortAnon/ControllableTalkNet.
+Current deployment based on https://github.com/SortAnon/ControllableTalkNet.
 
 Though this project comes with sample characters, none of that data is in this repo. This project just links to the GDrive ids of various people and projects, largely pones at https://www.kickscondor.com/pony-voice-preservation-project/.
 
@@ -93,20 +93,7 @@ CUDA is not installed. We need CUDA 11.0. Follow instructions here: https://deve
 The denoiser file is locally referenced in the hifi-gan folder
 Clone hifi-gan (above) and make sure you pip uninstall denoiser if you tried that
 
-
 # Training
 
-1. put LJSpeech-formatted dataset into /example folder, replacing metadata.csv and wavs
-2. edit train_filelist.txt and val_filelist.txt (just split metadata.csv 90/10% between them)
-3. follow installation intrusctions for dependencies
-4. `bash start_training.sh`
-
-### Pipeline Troubleshooting
-
-`Could not load dynamic library 'libcufft.so.10'; dlerror: libcufft.so.10: cannot open shared object file: No such file or directory`
-```
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
-sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
-sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
-sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
-sudo apt-get update
+Tools are provided here for creating datasets, as well as a training notebook that should "just work".
+https://github.com/webaverse/LJSpeechTools
