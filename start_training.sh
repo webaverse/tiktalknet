@@ -1,1 +1,0 @@
-ipython --TerminalIPythonApp.file_to_run=TalkNet_Training_Offline.ipynb
