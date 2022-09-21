@@ -142,56 +142,6 @@ app.layout = html.Div(
         ),
         dcc.Store(id="current-f0s"),
         dcc.Store(id="current-f0s-nosilence"),
-        dcc.Store(id="current-filename"),
-        dcc.Loading(
-            id="audio-loading",
-            children=[
-                html.Div(
-                    [
-                        html.Button(
-                            "Update file list",
-                            id="update-button",
-                            style={
-                                "margin-right": "10px",
-                            },
-                        ),
-                        dbc.Select(
-                            id="reference-dropdown",
-                            options=[],
-                            value=None,
-                            style={
-                                "max-width": "80vw",
-                                "width": "30em",
-                            },
-                            disabled=False,
-                        )
-                    ],
-                    style={
-                        "width": "100%",
-                        "display": "flex",
-                        "align-items": "center",
-                        "justify-content": "center",
-                        "flex-direction": "row",
-                        "margin-left": "50px",
-                        "vertical-align": "middle",
-                    },
-                ),
-                html.Audio(
-                    id="pitch-out",
-                    controls=True,
-                    style={"display": "none"},
-                ),
-                html.Div(
-                    id="audio-loading-output",
-                    style={
-                        "font-style": "italic",
-                        "margin-bottom": "0.7em",
-                        "text-align": "center",
-                    },
-                ),
-            ],
-            type="default",
-        ),
         html.Label("Transcript", htmlFor="transcript-input"),
         dcc.Textarea(
             id="transcript-input",
@@ -266,21 +216,6 @@ playback_style = {
 playback_hide = {
     "display": "none",
 }
-
-
-@app.callback(
-    dash.dependencies.Output("modal", "is_open"),
-    [
-        dash.dependencies.Input("open", "n_clicks"),
-        dash.dependencies.Input("close", "n_clicks"),
-    ],
-    [dash.dependencies.State("modal", "is_open")],
-)
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        return not is_open
-    return is_open
-
 
 @app.callback(
     [
@@ -411,126 +346,6 @@ def update_model(model):
     else:
         style = {"display": "none"}
     return style
-
-
-@app.callback(
-    [
-        dash.dependencies.Output("pitch-factor", "disabled"),
-        dash.dependencies.Output("reference-dropdown", "disabled"),
-        dash.dependencies.Output("pitch-button", "disabled"),
-    ],
-    [
-        dash.dependencies.Input("pitch-options", "value"),
-    ],
-)
-
-
-@app.callback(
-    dash.dependencies.Output("upload-label", "children"),
-    [
-        dash.dependencies.Input("upload-audio", "filename"),
-        dash.dependencies.Input("upload-audio", "contents"),
-    ],
-)
-def save_upload(uploaded_filenames, uploaded_file_contents):
-    try:
-        if uploaded_filenames is not None and uploaded_file_contents is not None:
-            for name, content in zip(uploaded_filenames, uploaded_file_contents):
-                if name.strip() == "":
-                    continue
-                data = content.encode("utf8").split(b";base64,")[1]
-                with open(os.path.join(RUN_PATH, name), "wb") as fp:
-                    fp.write(base64.decodebytes(data))
-    except Exception as e:
-        return str(e)
-    return "Uploaded " + str(len(uploaded_filenames)) + " file(s)"
-
-
-@app.callback(
-    dash.dependencies.Output("reference-dropdown", "options"),
-    [
-        dash.dependencies.Input("update-button", "n_clicks"),
-    ],
-)
-def update_filelist(n_clicks):
-    filelist = []
-    supported_formats = [".wav", ".ogg", ".mp3", "flac", ".aac"]
-    for x in sorted(os.listdir(RUN_PATH)):
-        if x[-4:].lower() in supported_formats:
-            filelist.append({"label": x, "value": x})
-    return filelist
-
-
-@app.callback(
-    [
-        dash.dependencies.Output("audio-loading-output", "children"),
-        dash.dependencies.Output("current-f0s", "data"),
-        dash.dependencies.Output("current-f0s-nosilence", "data"),
-        dash.dependencies.Output("current-filename", "data"),
-    ],
-    [
-        dash.dependencies.Input("reference-dropdown", "value"),
-    ],
-    [dash.dependencies.State("pitch-options", "value")],
-)
-def select_file(dropdown_value, pitch_options):
-    if dropdown_value is not None:
-        if not os.path.exists(os.path.join(RUN_PATH, "temp")):
-            os.mkdir(os.path.join(RUN_PATH, "temp"))
-        ffmpeg.input(os.path.join(RUN_PATH, dropdown_value)).output(
-            os.path.join(RUN_PATH, "temp", dropdown_value + "_conv.wav"),
-            ar="22050",
-            ac="1",
-            acodec="pcm_s16le",
-            map_metadata="-1",
-            fflags="+bitexact",
-        ).overwrite_output().run(quiet=True)
-        if "pitch" in pitch_options:
-            f0_with_silence, f0_wo_silence = extract_pitch.get_pitch(
-                os.path.join(RUN_PATH, "temp", dropdown_value + "_conv.wav"),
-                legacy=False,
-            )
-        else:
-            f0_with_silence, f0_wo_silence = extract_pitch.get_pitch(
-                os.path.join(RUN_PATH, "temp", dropdown_value + "_conv.wav"),
-                legacy=True,
-            )
-        return [
-            "Analyzed " + dropdown_value,
-            f0_with_silence,
-            f0_wo_silence,
-            dropdown_value,
-        ]
-    else:
-        return ["No audio analyzed", None, None]
-
-
-@app.callback(
-    [
-        dash.dependencies.Output("pitch-out", "src"),
-        dash.dependencies.Output("pitch-out", "style"),
-        dash.dependencies.Output("pitch-clicks", "data"),
-    ],
-    [
-        dash.dependencies.Input("pitch-button", "n_clicks"),
-        dash.dependencies.Input("pitch-clicks", "data"),
-        dash.dependencies.Input("current-f0s", "data"),
-    ],
-)
-def debug_pitch(n_clicks, pitch_clicks, current_f0s):
-    if not n_clicks or current_f0s is None or n_clicks <= pitch_clicks:
-        if n_clicks is not None:
-            pitch_clicks = n_clicks
-        else:
-            pitch_clicks = 0
-        return [
-            None,
-            playback_hide,
-            pitch_clicks,
-        ]
-    pitch_clicks = n_clicks
-    return [extract_pitch.f0_to_audio(current_f0s), playback_style, pitch_clicks]
-
 
 tnmodels, tnmodel, tnpath, tndurs, tnpitch = {}, None, None, None, None
 voc, last_voc, sr_voc, rec_voc = None, None, None, None
@@ -792,7 +607,7 @@ def generate_audio2(
 if __name__ == "__main__":
     app.run_server(
         host="0.0.0.0",
-        port=8080,
+        port=80,
         mode="external",
         debug=False,
         # dev_tools_silence_routes_logging = False,
