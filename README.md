@@ -4,14 +4,10 @@ Fast text-to-speech based on NeMo and Talk net, forked from this repo: https://g
 
 Though this project comes with sample characters, none of that data is in this repo. This project just links to the GDrive ids of various people and projects, largely pones at https://www.kickscondor.com/pony-voice-preservation-project/.
 
-Datasets:
+# Training
 
-https://mega.nz/folder/jkwimSTa#_xk0VnR30C8Ljsy4RCGSig/folder/OloAmDqZ
-https://mega.nz/folder/gVYUEZrI#6dQHH3P2cFYWm3UkQveHxQ/folder/JQ43mCyB
-
-## Building dataset from YouTube
-
-Check the (README)[youtube/README.md] in the youtube folder on how to build an LJSpeech dataset from youtube data. Even if it's imperfect, should get you started.
+Tools are provided here for creating datasets, as well as a training notebook that should "just work".
+https://github.com/webaverse/LJSpeechTools
 
 # TikTalknet Installation (works on AWS and CoreWeave)
 
@@ -92,8 +88,3 @@ CUDA is not installed. We need CUDA 11.0. Follow instructions here: https://deve
 ## Could not import Denoiser from denoiser
 The denoiser file is locally referenced in the hifi-gan folder
 Clone hifi-gan (above) and make sure you pip uninstall denoiser if you tried that
-
-# Training
-
-Tools are provided here for creating datasets, as well as a training notebook that should "just work".
-https://github.com/webaverse/LJSpeechTools
