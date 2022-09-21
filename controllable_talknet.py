@@ -50,7 +50,7 @@ def home():
         voice = request.args.get('voice')
         if voice is None or voice == "":
             voice = "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx"
-        response = mkResponse(generate_audio2(1, voice + "|default", None, s, ['dra'], 0, None, None, None))
+        response = mkResponse(generate_audio2(1, voice + "|default", None, s, [], 0, None, None, None))
     # res.setHeader('Access-Control-Allow-Origin', '*');
     # res.setHeader('Access-Control-Allow-Headers', '*');
     # res.setHeader('Access-Control-Allow-Methods', '*');
@@ -91,14 +91,13 @@ reconstruct_inst = reconstruct.Reconstruct(
     ),
 )
 
-app.title = "Controllable TalkNet"
+app.title = "Webaverse TTS"
 app.layout = html.Div(
     children=[
         html.H1(
             id="header",
-            children="Controllable TalkNet",
+            children="Webaverse TTS",
             style={
-                "font-family": "EquestriaWebfont",
                 "color": "#52042c",
                 "font-size": "4em",
                 "text-align": "center",
@@ -141,19 +140,6 @@ app.layout = html.Div(
                 "display": "none",
             },
         ),
-        html.Label(
-            "Upload reference audio to " + RUN_PATH,
-            htmlFor="reference-dropdown",
-            id="upload-label",
-        ),
-        dcc.Upload(
-            id="upload-audio",
-            children=html.Div(["Drag and drop or click to select a file to upload."]),
-            style={
-                "display": "none",
-            },
-            multiple=True,
-        ),
         dcc.Store(id="current-f0s"),
         dcc.Store(id="current-f0s-nosilence"),
         dcc.Store(id="current-filename"),
@@ -178,16 +164,7 @@ app.layout = html.Div(
                                 "width": "30em",
                             },
                             disabled=False,
-                        ),
-                        dcc.Store(id="pitch-clicks"),
-                        html.Button(
-                            "Debug pitch",
-                            id="pitch-button",
-                            style={
-                                "margin-left": "10px",
-                            },
-                            disabled=False,
-                        ),
+                        )
                     ],
                     style={
                         "width": "100%",
@@ -214,50 +191,6 @@ app.layout = html.Div(
                 ),
             ],
             type="default",
-        ),
-        html.Div(
-            [
-                dcc.Checklist(
-                    id="pitch-options",
-                    options=[
-                        {"label": "Change input pitch", "value": "pf"},
-                        {"label": "Auto-tune output", "value": "pc"},
-                        {"label": "Disable reference audio", "value": "dra"},
-                        {"label": "Reduce metallic noise (slow)", "value": "srec"},
-                        # {"label": "Alternate pitch detector", "value": "pitch"},
-                    ],
-                    value=[],
-                ),
-                html.Div(
-                    [
-                        html.Label("Semitones", htmlFor="pitch-factor"),
-                        dcc.Input(
-                            id="pitch-factor",
-                            type="number",
-                            value="0",
-                            style={"width": "7em"},
-                            min=-11,
-                            max=11,
-                            step=1,
-                            disabled=True,
-                        ),
-                    ],
-                    style={
-                        "flex-direction": "column",
-                        "margin-left": "10px",
-                        "margin-bottom": "0.7em",
-                    },
-                ),
-            ],
-            style={
-                "width": "100%",
-                "display": "flex",
-                "align-items": "center",
-                "justify-content": "center",
-                "flex-direction": "row",
-                "margin-left": "50px",
-                "margin-bottom": "0.7em",
-            },
         ),
         html.Label("Transcript", htmlFor="transcript-input"),
         dcc.Textarea(
@@ -299,96 +232,7 @@ app.layout = html.Div(
                     "flex-direction": "column",
                 },
             )
-        ),
-        html.Footer(
-            children="""
-                Presented by the Pony Preservation Project.
-            """,
-            style={"margin-top": "2em", "font-size": "0.7em"},
-        ),
-        html.A("License info", href="#", id="open"),
-        dbc.Modal(
-            [
-                dbc.ModalHeader("About"),
-                dbc.ModalBody(
-                    html.Div(
-                        children=[
-                            html.P(
-                                [
-                                    "Copyright (C) 2021 Pony Preservation Project",
-                                    html.Br(),
-                                    html.Br(),
-                                    "This program is free software: you can redistribute it and/or modify",
-                                    html.Br(),
-                                    "it under the terms of the GNU Affero General Public License as published by",
-                                    html.Br(),
-                                    "the Free Software Foundation, either version 3 of the License, or",
-                                    html.Br(),
-                                    "(at your option) any later version.",
-                                    html.Br(),
-                                    html.Br(),
-                                    "This program is distributed in the hope that it will be useful,",
-                                    html.Br(),
-                                    "but WITHOUT ANY WARRANTY; without even the implied warranty of",
-                                    html.Br(),
-                                    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
-                                    html.Br(),
-                                ]
-                            ),
-                            html.A(
-                                "See the GNU Affero General Public License for more details.",
-                                href="https://www.gnu.org/licenses/agpl-3.0.en.html",
-                                target="_blank",
-                            ),
-                            html.P(
-                                [
-                                    html.Br(),
-                                    "Controllable TalkNet is built on top of these Python libraries:",
-                                ]
-                            ),
-                            html.A(
-                                "NVIDIA NeMo",
-                                href="https://pypi.org/project/nemo-toolkit/",
-                                target="_blank",
-                            ),
-                            html.Br(),
-                            html.A(
-                                "Dash",
-                                href="https://pypi.org/project/dash/",
-                                target="_blank",
-                            ),
-                            html.Br(),
-                            html.A(
-                                "Taming Transformers",
-                                href="https://github.com/CompVis/taming-transformers",
-                                target="_blank",
-                            ),
-                            html.Br(),
-                            html.A(
-                                "HiFi-GAN",
-                                href="https://github.com/jik876/hifi-gan",
-                                target="_blank",
-                            ),
-                            html.Br(),
-                            html.A(
-                                "CREPE Pitch Tracker",
-                                href="https://pypi.org/project/crepe/",
-                                target="_blank",
-                            ),
-                            html.Br(),
-                            html.A(
-                                "torchcrepe",
-                                href="https://pypi.org/project/torchcrepe/",
-                                target="_blank",
-                            ),
-                            html.Br(),
-                        ]
-                    )
-                ),
-                dbc.ModalFooter(dbc.Button("Close", id="close", className="ml-auto")),
-            ],
-            id="modal",
-        ),
+        )
     ],
     style={
         "width": "100%",
@@ -579,8 +423,6 @@ def update_model(model):
         dash.dependencies.Input("pitch-options", "value"),
     ],
 )
-def update_pitch_options(value):
-    return ["pf" not in value, "dra" in value, "dra" in value]
 
 
 @app.callback(
@@ -742,13 +584,6 @@ def generate_audio(
             playback_hide,
             None,
         ]
-    if wav_name is None and "dra" not in pitch_options:
-        return [
-            None,
-            "No reference audio selected",
-            playback_hide,
-            None,
-        ]
     load_error, talknet_path, vocoder_path = download_from_drive(
         model.split("|")[0], custom_model, RUN_PATH
     )
@@ -792,33 +627,13 @@ def generate_audio(
 
             # Generate spectrogram
             token_list, tokens, arpa = extract_dur.get_tokens(transcript)
-            if "dra" in pitch_options:
-                if tndurs is None or tnpitch is None:
-                    return [
-                        None,
-                        "Model doesn't support pitch prediction",
-                        playback_hide,
-                        None,
-                    ]
-                spect = tnmodel.generate_spectrogram(tokens=tokens)
-            else:
-                durs = extract_dur.get_duration(wav_name, transcript, token_list)
-
-                # Change pitch
-                if "pf" in pitch_options:
-                    f0_factor = np.power(np.e, (0.0577623 * float(pitch_factor)))
-                    f0s = [x * f0_factor for x in f0s]
-                    f0s_wo_silence = [x * f0_factor for x in f0s_wo_silence]
-
-                spect = tnmodel.force_spectrogram(
-                    tokens=tokens,
-                    durs=torch.from_numpy(durs)
-                    .view(1, -1)
-                    .type(torch.LongTensor)
-                    .to(DEVICE),
-                    f0=torch.FloatTensor(f0s).view(1, -1).to(DEVICE),
-                )
-
+            if tndurs is None or tnpitch is None:
+                return [
+                    None,
+                    "Model doesn't support pitch prediction",
+                    playback_hide,
+                    None,
+                ]
             # Vocoding
             if last_voc != vocoder_path:
                 voc = vocoder.HiFiGAN(vocoder_path, "config_v1", DEVICE)
@@ -833,10 +648,6 @@ def generate_audio(
                         os.path.join(RUN_PATH, "models", "hifirec"), "config_v1", DEVICE
                     )
                 audio, audio_torch = rec_voc.vocode(new_spect)
-
-            # Auto-tuning
-            if "pc" in pitch_options and "dra" not in pitch_options:
-                audio = extract_pitch.auto_tune(audio, audio_torch, f0s_wo_silence)
 
             # Super-resolution
             if sr_voc is None:
@@ -890,13 +701,6 @@ def generate_audio2(
             playback_hide,
             None,
         ]
-    if wav_name is None and "dra" not in pitch_options:
-        return [
-            None,
-            "No reference audio selected",
-            playback_hide,
-            None,
-        ]
     load_error, talknet_path, vocoder_path = download_from_drive(
         model.split("|")[0], custom_model, RUN_PATH
     )
@@ -941,33 +745,14 @@ def generate_audio2(
             # Generate spectrogram
             try:
                 token_list, tokens, arpa = extract_dur.get_tokens(transcript)
-                if "dra" in pitch_options:
-                    if tndurs is None or tnpitch is None:
-                        return [
-                            None,
-                            "Model doesn't support pitch prediction",
-                            playback_hide,
-                            None,
-                        ]
-                    spect = tnmodel.generate_spectrogram(tokens=tokens)
-                else:
-                    durs = extract_dur.get_duration(wav_name, transcript, token_list)
-
-                    # Change pitch
-                    if "pf" in pitch_options:
-                        f0_factor = np.power(np.e, (0.0577623 * float(pitch_factor)))
-                        f0s = [x * f0_factor for x in f0s]
-                        f0s_wo_silence = [x * f0_factor for x in f0s_wo_silence]
-
-                    spect = tnmodel.force_spectrogram(
-                        tokens=tokens,
-                        durs=torch.from_numpy(durs)
-                        .view(1, -1)
-                        .type(torch.LongTensor)
-                        .to(DEVICE),
-                        f0=torch.FloatTensor(f0s).view(1, -1).to(DEVICE),
-                    )
-
+                if tndurs is None or tnpitch is None:
+                    return [
+                        None,
+                        "Model doesn't support pitch prediction",
+                        playback_hide,
+                        None,
+                    ]
+                spect = tnmodel.generate_spectrogram(tokens=tokens)
                 # Vocoding
                 if last_voc != vocoder_path:
                     voc = vocoder.HiFiGAN(vocoder_path, "config_v1", DEVICE)
@@ -982,10 +767,6 @@ def generate_audio2(
                             os.path.join(RUN_PATH, "models", "hifirec"), "config_v1", DEVICE
                         )
                     audio, audio_torch = rec_voc.vocode(new_spect)
-
-                # Auto-tuning
-                if "pc" in pitch_options and "dra" not in pitch_options:
-                    audio = extract_pitch.auto_tune(audio, audio_torch, f0s_wo_silence)
 
                 # Super-resolution
                 if sr_voc is None:
@@ -1011,7 +792,7 @@ def generate_audio2(
 if __name__ == "__main__":
     app.run_server(
         host="0.0.0.0",
-        port=80,
+        port=8080,
         mode="external",
         debug=False,
         # dev_tools_silence_routes_logging = False,
