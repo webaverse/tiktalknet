@@ -5,3 +5,4 @@ trainfiles.txt
 valfiles.json
 valfiles.txt
 __pycache__
+.cog

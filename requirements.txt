@@ -1,7 +1,8 @@
-numpy==1.19.5
+-f https://download.pytorch.org/whl/torch_stable.html
+numpy==1.20.0
 scipy==1.7.0
-tensorflow==2.4.1
-tensorboard==2.4.1
+tensorflow==2.8.0
+tensorboard==2.8.0
 dash==1.21.0
 dash-bootstrap-components==0.13.0
 jupyter-dash==0.4.0
@@ -25,7 +26,7 @@ crepe==0.0.12
 resampy==0.2.2
 ffmpeg-python==0.2.0
 tqdm
-gdown==3.13.0
+gdown==4.5.1
 editdistance==0.5.3
 ipywidgets==7.6.3
 torchcrepe==0.0.15

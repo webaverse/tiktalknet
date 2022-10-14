@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+'''
 import os
 import base64
 import dash
@@ -40,7 +40,7 @@ def mkResponse(data):
     mimetype="audio/x-wav",
   ))
 
-@app.server.route("/tts")
+# @app.server.route("/tts")
 def home():
     s = request.args.get("s")
     response = None
@@ -61,6 +61,19 @@ def home():
     response.headers["Access-Control-Allow-Headers"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "*"
     return response
+
+# test
+# def return_audio_to_prediction(s, voice):
+#     response = None
+#     if s is None or s == "":
+#         response = mkResponse(getSilentWav())
+#     else:
+#         if voice is None or voice == "":
+#             voice = "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx"
+#         response = mkResponse(generate_audio2(1, voice + "|default", None, s, [], 0, None, None, None))
+    
+#     return response
+
 
 DEVICE = "cuda:0"
 CPU_PITCH = False
@@ -800,3 +813,4 @@ if __name__ == "__main__":
         # dev_tools_hot_reload=True,
         threaded=True,
     )
+'''

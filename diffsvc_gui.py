@@ -1,4 +1,4 @@
-import sys
+'''import sys
 import os
 import io
 import base64
@@ -366,3 +366,4 @@ if __name__ == "__main__":
         dev_tools_hot_reload=True,
         threaded=True,
     )
+'''

@@ -1,4 +1,4 @@
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     import os
     from controllable_talknet import *
 
@@ -15,3 +15,4 @@ if __name__ == "__main__":
             debug=False,
             threaded=True,
         )
+'''
