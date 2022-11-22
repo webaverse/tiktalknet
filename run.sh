@@ -1,1 +1,1 @@
-nohup sudo python3 controllable_talknet.py &
+nohup python3 controllable_talknet.py &
