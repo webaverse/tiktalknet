@@ -1,1 +1,0 @@
-nohup ./controllable_talknet.py &
