@@ -604,10 +604,13 @@ def generate_audio2(
     except Exception:
         return str(traceback.format_exc())
 
+# get port from env
+port = int(os.environ.get("PORT", 8888))
+
 if __name__ == "__main__":
     app.run_server(
         host="0.0.0.0",
-        port=80,
+        port=port,
         mode="external",
         debug=False,
         # dev_tools_silence_routes_logging = False,
